@@ -2,9 +2,17 @@ HistoMine = (function() {
   var BATCH_SIZE = 500;
   var FETCH_URL = '/push/chromehistory-history/getCurrent';
   var urls = {};
+  var stack = [];
 
   function init() {
     $.getJSON(FETCH_URL, {limit: BATCH_SIZE}, addBatch);
+    $('#up').click(up);
+  }
+
+  function up(evt) {
+    evt.preventDefault();
+    var item = stack.pop();
+    if (item) draw(item);
   }
 
   function addBatch(history) {
@@ -34,7 +42,8 @@ HistoMine = (function() {
       tree[first] = {
         name: first,
         count: 1,
-        tree: {}
+        tree: {},
+        parent: tree
       };
     } else {
       tree[first].count++;
@@ -43,29 +52,33 @@ HistoMine = (function() {
     addPieces(tree[first].tree, rest);
   }
 
-  var MIN_FONT = 10;
-  var MAX_FONT = 80;
+  var MIN_FONT = 16;
+  var MAX_FONT = 60;
   var FONT_RANGE = MAX_FONT - MIN_FONT;
   function draw(tree) {
     var range = countRange(urls);
     var min = range[0];
     var max = range[1];
     range = max - min;
-    var list = $('#urls');
+    var list = $('#urls').html('');
     $.each(tree, function(i, node) {
       var percent = (node.count - min) / range;
       var size = MIN_FONT + Math.floor(FONT_RANGE * percent);
       list.append(
-        $('<a>', {
-          href: '#'
-        }).
+        $('<a>').
         attr('data-size', size).
-        text(node.name)
+        text(node.name).
+        click(function(evt) {
+          evt.preventDefault();
+          stack.push(tree);
+          draw(node.tree);
+        })
       );
     });
     $('#cloud').tagcanvas({
       frontSelect: true,
       reverse: true,
+      textColour: '#666',
       weight: true,
       weightFrom: 'data-size'
     }, 'urls');
