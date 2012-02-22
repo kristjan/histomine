@@ -1,0 +1,20 @@
+{
+  "author": "Kristján Pétursson <kristjan@gmail.com>",
+  "description": "Mine your browser history",
+  "version": "0.0.1",
+  "licenses": [{
+    "type": "MIT",
+    "url": "http://creativecommons.org/licenses/MIT/"
+  }],
+  "repository":{
+    "static": true,
+    "type" : "app",
+    "title":"HistoMine",
+    "handle": "histomine",
+    "uses" : {
+      "types": [
+        "links"
+      ]
+    }
+  }
+}
